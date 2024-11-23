@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            width: 400px;
+        }
+        div {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="password"] {
+            width: 200px;
+            padding: 5px;
+        }
+        input[type="submit"] {
+            padding: 10px 15px;
+            margin-right: 10px;
+        }
+        h3 {
+            margin-top: 20px;
+        }
+        a {
+            display: block;
+            margin-top: 10px;
+            color: #337ab7;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Details</h1>
+
+    
+   <form th:action="@{/users/{userId}/update(userId=${user.userId})}" th:object="${user}" method="post">
+    	<input type="hidden" th:field="*{userId}" />
+    	<div>
+        	<label>Username:</label>
+        	<input type="text" th:field="*{username}" />
+    	</div>
+    	<div>
+        	<label>Password:</label>
+        	<input type="password" th:field="*{password}" />
+    	</div>
+    	<div>
+        	<label>Full Name:</label>
+        	<input type="text" th:field="*{name}" />
+    	</div>
+    	<hr/>
+    	<div>
+        	<label>Address Line 1:</label>
+        	<input type="text" th:field="*{address.addressLine1}" />
+    	</div>
+    	<div>
+        	<label>Address Line 2:</label>
+        	<input type="text" th:field="*{address.addressLine2}" />
+    	</div>
+    	<div>
+        	<label>City:</label>
+        	<input type="text" th:field="*{address.city}" />
+    	</div>
+    	<div>
+        	<label>Region:</label>
+        	<input type="text" th:field="*{address.region}" />
+    	</div>
+    	<div>
+        	<label>Country:</label>
+        	<input type="text" th:field="*{address.country}" />
+    	</div>
+    	<div>
+        	<label>Zip Code:</label>
+        	<input type="text" th:field="*{address.zipCode}" />
+    	</div>
+    	<button type="submit">Update User Account</button>
+	</form>
+    
+
+    <form th:action="@{/users/{userId}/delete(userId=${user.userId})}" method="post">
+        <input type="submit" value="Delete User Account" />
+    </form>
+
+	
+    	<h3>Accounts</h3>
+    <div>
+    	<ul>
+    		<li th:each="account : ${user.accounts}">
+        		<a th:href="@{/users/{userId}/accounts/{accountId}(userId=${user.userId}, accountId=${account.accountId})}">
+            		[[${account.accountName}]] 
+       			 </a>
+    		</li>
+		</ul> 	
+	</div>
+	
+	
+    <form th:action="@{/users/{userId}/accounts(userId=${user.userId})}" method="get">
+    	<input type="submit" value="Create New Bank Account" />
+	</form>
+    
+    
+
+    <a th:href="@{/users}">Back to Users List</a>
+</body>
+</html>
+

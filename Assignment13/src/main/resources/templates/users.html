@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<html>
+<head>
+	<title>Users List</title>
+</head>
+<body>
+	<h1>Users</h1>
+	
+	<div th:each="user : ${users}">
+		<span><a th:href="@{/users/{userId}(userId=${user.userId})}">[[${user.userId}]]</a></span><br/>
+		<span th:text="${user.username}">Username</span><br/>
+		<span th:text="${user.name}">Full Name</span><br/>
+		<span th:text="${user.password}">Password</span><br/>
+		
+		<div th:each="account : ${user.accounts}">
+			<span th:text="${account.accountName}">Account Name</span>
+		</div>
+		<hr/>
+	</div>
+</body>
+</html>
