@@ -77,19 +77,12 @@ public class UserService {
 	    if (userId != null) {
 	        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-	        
-	        if (user.getAddresses() == null) {
-	            user.setAddresses(new ArrayList<>());
-	        }
-
-	      
-	        Optional<Address> existingAddressOpt = user.getAddresses().stream()
-	                .filter(address -> updatedAddress.getId() != null
-	                        && updatedAddress.getId().equals(address.getId()))
-	                .findFirst();
-
-	        if (existingAddressOpt.isPresent()) {
-	            Address existingAddress = existingAddressOpt.get();
+	        Address existingAddress = user.getAddress();
+	        if (existingAddress == null) {
+	            updatedAddress.setUser(user);
+	            user.setAddress(updatedAddress);
+	            addressRepo.save(updatedAddress);
+	        } else {
 	            existingAddress.setAddressLine1(updatedAddress.getAddressLine1());
 	            existingAddress.setAddressLine2(updatedAddress.getAddressLine2());
 	            existingAddress.setCity(updatedAddress.getCity());
@@ -97,33 +90,29 @@ public class UserService {
 	            existingAddress.setZipCode(updatedAddress.getZipCode());
 	            existingAddress.setCountry(updatedAddress.getCountry());
 	            addressRepo.save(existingAddress);
-	        } else {
-	            updatedAddress.setUser(user);
-	            user.getAddresses().add(updatedAddress);
-	            addressRepo.save(updatedAddress);
 	        }
 	    }
 	}
 
 	public User findById(Long userId) {
-        
-        Optional<User> userOpt = userRepo.findById(userId);
+	    Optional<User> userOpt = userRepo.findById(userId);
 
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
+	    if (userOpt.isPresent()) {
+	        User user = userOpt.get();
 
-            
-            if (user.getAddresses() == null || user.getAddresses().isEmpty()) {
-                Address newAddress = new Address();
-                newAddress.setUser(user); // Associate new address with the existing user
-                user.getAddresses().add(newAddress);
-                addressRepo.save(newAddress); // Save the new address
-            }
-            return user;
-        } else {
-            throw new RuntimeException("User not found with ID: " + userId);
-        }
-    }
+	        if (user.getAddress() == null) {
+	            Address newAddress = new Address();
+	            newAddress.setUser(user);
+	            user.setAddress(newAddress);
+	            addressRepo.save(newAddress);
+	        }
+
+	        return user;
+	    } else {
+	        throw new RuntimeException("User not found with ID: " + userId);
+	    }
+	}
+
 
 
 	public Account findByAccountId(Long accountId) {
@@ -152,40 +141,25 @@ public class UserService {
 	        existingUser.setUsername(user.getUsername());
 	        existingUser.setName(user.getName());
 
-	        if (user.getAddresses() != null && !user.getAddresses().isEmpty()) {
-	            for (Address address : user.getAddresses()) {
-	                address.setUser(existingUser);
-	                addressRepo.save(address);
-	            }
+	        if (user.getAddress() != null) {
+	            Address address = user.getAddress();
+	            address.setUser(existingUser);
+	            addressRepo.save(address);
+	            existingUser.setAddress(address);
 	        }
 
 	        return userRepo.save(existingUser);
 	    } else {
-	        if (user.getAddresses() != null && !user.getAddresses().isEmpty()) {
-	            for (Address address : user.getAddresses()) {
-	                address.setUser(user);
-	                addressRepo.save(address);
-	            }
+	        if (user.getAddress() != null) {
+	            Address address = user.getAddress();
+	            address.setUser(user);
+	            addressRepo.save(address);
+	            user.setAddress(address);
 	        }
-
-	        Account checking = new Account();
-	        checking.setAccountName("Checking Account");
-	        checking.getUsers().add(user);
-
-	        Account savings = new Account();
-	        savings.setAccountName("Savings Account");
-	        savings.getUsers().add(user);
-
-	        user.getAccounts().add(checking);
-	        user.getAccounts().add(savings);
-
-	        accountRepo.save(checking);
-	        accountRepo.save(savings);
 
 	        return userRepo.save(user);
 	    }
 	}
-
 
 	public void delete(Long userId) {
 		userRepo.deleteById(userId);

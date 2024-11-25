@@ -13,6 +13,7 @@
 		<span th:text="${user.name}">Full Name</span><br/>
 		<span th:text="${user.password}">Password</span><br/>
 		
+		
 		<div th:each="account : ${user.accounts}">
 			<span th:text="${account.accountName}">Account Name</span>
 		</div>

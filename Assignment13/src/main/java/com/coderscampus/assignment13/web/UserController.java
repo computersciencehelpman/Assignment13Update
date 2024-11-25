@@ -20,7 +20,6 @@ import com.coderscampus.assignment13.domain.Address;
 import com.coderscampus.assignment13.service.UserService;
 
 @Controller
-@RequestMapping("/users")
 public class UserController {
 	
 	@Autowired
@@ -97,25 +96,28 @@ public class UserController {
 	@GetMapping("/users/{userId}")
 	public String getOneUser(ModelMap model, @PathVariable Long userId) {
 	    User user = userService.findById(userId);
-	    
-	    
-	    if (user.getAddresses() == null || user.getAddresses().isEmpty()) {
+
+	    // Check if the user has an address; create one if it doesn't exist
+	    if (user.getAddress() == null) {
 	        Address newAddress = new Address();
-	        newAddress.setUser(user); 
-	        user.getAddresses().add(newAddress); 
+	        newAddress.setUser(user); // Associate the address with the user
+	        user.setAddress(newAddress); // Set the new address for the user
 	    }
 
-	   
+	    // Check if the user has accounts; initialize if empty
 	    if (user.getAccounts() == null || user.getAccounts().isEmpty()) {
 	        user.setAccounts(new ArrayList<>());
 	    }
 
+	    // Add attributes to the model
 	    model.addAttribute("user", user);
 	    model.addAttribute("accounts", user.getAccounts());
-	    model.addAttribute("addresses", user.getAddresses()); 
+	    model.addAttribute("address", user.getAddress()); // Use singular "address" since it's not a collection
+
 	    System.out.println("Confirm");
-	    return "userDetails";  
+	    return "userDetails";
 	}
+
 
 
 	@PostMapping("/users/{userId}")

@@ -9,18 +9,18 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String AddressLine1;
-    private String AddressLine2;
-    private String City;
-    private String Region;
-    private String ZipCode;
-    private String Country;
+    private String addressLine1;
+    private String addressLine2;
+    private String city;
+    private String region;
+    private String zipCode;
+    private String country;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    
+
     public Long getId() {
         return id;
     }
@@ -29,66 +29,71 @@ public class Address {
         this.id = id;
     }
 
+   
+
     public String getAddressLine1() {
-		return AddressLine1;
-	}
+        return addressLine1;
+    }
 
-	public void setAddressLine1(String addressLine1) {
-		AddressLine1 = addressLine1;
-	}
+    public void setAddressLine1(String addressLine1) {
+        this.addressLine1 = addressLine1;
+    }
 
-	public String getAddressLine2() {
-		return AddressLine2;
-	}
+    public String getAddressLine2() {
+        return addressLine2;
+    }
 
-	public void setAddressLine2(String addressLine2) {
-		AddressLine2 = addressLine2;
-	}
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
+    }
 
-	public String getCity() {
-		return City;
-	}
+    public String getCity() {
+        return city;
+    }
 
-	public void setCity(String city) {
-		City = city;
-	}
+    public void setCity(String city) {
+        this.city = city;
+    }
 
-	public String getRegion() {
-		return Region;
-	}
+    public String getRegion() {
+        return region;
+    }
 
-	public void setRegion(String region) {
-		Region = region;
-	}
+    public void setRegion(String region) {
+        this.region = region;
+    }
 
-	public String getZipCode() {
-		return ZipCode;
-	}
+    public String getZipCode() {
+        return zipCode;
+    }
 
-	public void setZipCode(String zipCode) {
-		ZipCode = zipCode;
-	}
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
 
-	public String getCountry() {
-		return Country;
-	}
+    public String getCountry() {
+        return country;
+    }
 
-	public void setCountry(String country) {
-		Country = country;
-	}
+    public void setCountry(String country) {
+        this.country = country;
+    }
 
-	public User getUser() {
+    public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+        if (user != null) {
+            user.setAddress(this);
+        }
     }
 
+
     @Override
-	public String toString() {
-		return "Address [id=" + id + ", AddressLine1=" + AddressLine1 + ", AddressLine2=" + AddressLine2 + ", City="
-				+ City + ", Region=" + Region + ", ZipCode=" + ZipCode + ", Country=" + Country + ", user=" + user
-				+ "]";
-	}
+    public String toString() {
+        return "Address [id=" + id + ", addressLine1=" + addressLine1 + ", addressLine2=" + addressLine2 + ", city="
+                + city + ", region=" + region + ", zipCode=" + zipCode + ", country=" + country + ", user=" + user + "]";
+    }
 }
