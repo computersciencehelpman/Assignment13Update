@@ -9,5 +9,6 @@ import com.coderscampus.assignment13.domain.Address;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
-    Optional<Address> findByUser_UserId(Long userId);
+	
 }
+

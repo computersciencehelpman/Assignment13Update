@@ -17,9 +17,12 @@ public class Address {
     private String country;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    public Address() {
+    	
+    }
 
     public Long getId() {
         return id;
@@ -90,10 +93,10 @@ public class Address {
         }
     }
 
-
     @Override
     public String toString() {
         return "Address [id=" + id + ", addressLine1=" + addressLine1 + ", addressLine2=" + addressLine2 + ", city="
-                + city + ", region=" + region + ", zipCode=" + zipCode + ", country=" + country + ", user=" + user + "]";
+                + city + ", region=" + region + ", zipCode=" + zipCode + ", country=" + country + "]";
     }
+
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+
 
 import com.coderscampus.assignment13.domain.User;
 import com.coderscampus.assignment13.domain.Account;
@@ -25,9 +26,15 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
+	  public UserController(UserService userService) {
+	        this.userService = userService;
+	    }
+
+	   
+	
 	@GetMapping("/details")
     public ResponseEntity<Set<User>> getUsersWithDetails() {
-        Set<User> users = userService.findAllUsersWithDetails();
+        Set<User> users = userService.findAll();
         return ResponseEntity.ok(users);
     }
 	
@@ -129,7 +136,7 @@ public class UserController {
 	
 	@PostMapping("/users/{userId}/delete")
 	public String deleteOneUser (@PathVariable Long userId) {
-		userService.delete(userId);
+		userService.deleteUser(userId);
 		return "redirect:/users";
 	}
 	
@@ -143,7 +150,7 @@ public class UserController {
 	    } else {
 	        savedAccount = userService.findByAccountId(account.getAccountId());
 	        savedAccount.setAccountName(account.getAccountName());
-	        userService.saveAccount(savedAccount);
+	        userService.saveOrUpdateAccount(userId, savedAccount);
 	    }
 
 	    if (!user.getAccounts().contains(savedAccount)) {
@@ -169,7 +176,7 @@ public class UserController {
 	public String saveAccount(@PathVariable Long userId, @PathVariable Long accountId, @ModelAttribute Account account) {
 		System.out.println("Saving Account");
 		account.setAccountId(accountId); 
-	    userService.saveAccount(userId, account); 
+	    userService.saveOrUpdateAccount(userId, account); 
 	    System.out.println("Saved account: "+account);
 	    return "redirect:/users/" + userId; 
 	}
@@ -213,7 +220,7 @@ public class UserController {
 	       
 	        Account newAccount = userService.createAccountForUser(userId, account.getAccountName());
 	        newAccount.setAccountName(account.getAccountName());
-	        userService.saveAccount(newAccount);
+	        userService.saveOrUpdateAccount(userId, newAccount);
 	        System.out.println("New account created successfully for user ID: " + userId);
 	        return "redirect:/users/" + userId + "/accounts/" + newAccount.getAccountId();
 	    } else {
@@ -221,7 +228,7 @@ public class UserController {
 	        Account existingAccount = userService.findByAccountId(accountId);
 	        if (existingAccount != null) {
 	            existingAccount.setAccountName(account.getAccountName());
-	            userService.saveAccount(existingAccount);
+	            userService.saveOrUpdateAccount(userId,existingAccount);
 	            System.out.println("Account updated successfully for account ID: " + accountId);
 	        }
 	        return "redirect:/users/" + userId + "/accounts/" + accountId;

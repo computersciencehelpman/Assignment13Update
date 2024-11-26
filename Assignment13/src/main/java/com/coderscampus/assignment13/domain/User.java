@@ -3,28 +3,37 @@ package com.coderscampus.assignment13.domain;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
 import javax.persistence.*;
+
 
 @Entity
 @Table(name = "users")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "user_id")
+	private Long userId;
 
+    @Column(nullable = false)
     private String username;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
     private String name;
+    
+   
+
     private LocalDate createdDate;
 
+    public User() {
+    	
+    }
+
+    
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Address address;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<Address> addresses;
-
     
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
@@ -39,7 +48,7 @@ public class User {
         this.createdDate = LocalDate.now();
     }
 
-    // Getters and Setters
+   
     public Long getUserId() {
         return userId;
     }
@@ -91,7 +100,6 @@ public class User {
         }
     }
 
-
     public List<Account> getAccounts() {
         return accounts;
     }
@@ -102,7 +110,8 @@ public class User {
 
     @Override
     public String toString() {
-        return "User [userId=" + userId + ", username=" + username + ", password=" + password + ", name=" + name
-                + ", createdDate=" + createdDate + ", address=" + address + ", accounts=" + accounts + "]";
+        return "User [userId=" + userId + ", username=" + username + ", name=" + name + ", createdDate=" + createdDate + "]";
     }
+
+
 }

@@ -12,22 +12,11 @@ import com.coderscampus.assignment13.domain.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-	
-	
-	// select * from users where username = :username
-	List<User> findByUsername(String username);
-	
-	// select * from users where name = :name
-	List<User> findByName(String name);
-	
-	// select * from users where name = :name and username = :username
-	List<User> findByNameAndUsername(String name, String username);
-	
-	List<User> findByCreatedDateBetween(LocalDate date1, LocalDate date2);
-	
-	@Query("select u from User u where username = :username")
-	List<User> findExactlyOneUserByUsername(String username);
-	
-	@Query("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.accounts LEFT JOIN FETCH u.addresses")
-	Set<User> findAllUsersWithAccountsAndAddresses();
+    List<User> findByUsername(String username);
+    List<User> findByNameAndUsername(String name, String username);
+    List<User> findByCreatedDateBetween(LocalDate date1, LocalDate date2);
+
+    // Custom query example for accounts and address
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.accounts LEFT JOIN FETCH u.address")
+    Set<User> findAllUsersWithAccountsAndAddress();
 }

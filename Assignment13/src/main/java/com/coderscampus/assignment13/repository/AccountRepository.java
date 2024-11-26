@@ -8,11 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.coderscampus.assignment13.domain.Account;
 
-
 @Repository
-public interface AccountRepository extends JpaRepository<Account, Long>{
-
-	// select * from users where accountName = :accountName
-		List<Account> findByAccountName(String accountName);
-	
+public interface AccountRepository extends JpaRepository<Account, Long> {
+    List<Account> findByAccountName(String accountName);
 }
