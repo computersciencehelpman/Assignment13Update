@@ -88,7 +88,8 @@ public class Address {
 
     public void setUser(User user) {
         this.user = user;
-        if (user != null) {
+        // Avoid infinite recursion
+        if (user != null && user.getAddress() != this) {
             user.setAddress(this);
         }
     }

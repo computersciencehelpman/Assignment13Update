@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.coderscampus.assignment13.domain.User;
 import com.coderscampus.assignment13.domain.Account;
@@ -81,24 +82,39 @@ public class UserController {
 		return "redirect:/register";
 	}
 	
+	@RestController
+	public class FaviconController {
+	    @GetMapping("favicon.ico")
+	    public void favicon() {
+	        // Do nothing (or return an empty response)
+	    }
+	}
+	
 	@PostMapping("/users/{userId}/update")
 	public String updateUser(@PathVariable Long userId, @ModelAttribute User user) {
+	    // Find the existing user by ID
 	    User existingUser = userService.findById(userId);
+
+	    // Update basic user details
 	    existingUser.setUsername(user.getUsername());
 	    existingUser.setName(user.getName());
-	    userService.saveUser(user);
-	    System.out.println("Updating user "+ userId);
+	    existingUser.setPassword(user.getPassword());
+
+	    // Update address details, if provided
+	    Address address = user.getAddress();
+	    if (address != null) {
+	        address.setUser(existingUser); // Associate address with the user
+	        userService.updateAddress(address); // Persist address changes
+	    }
+
+	    // Save updated user
+	    userService.saveUser(existingUser);
+	    System.out.println("Updating user " + userId);
+
 	    return "redirect:/users";
 	}
 
-	@PostMapping("/users/{userId}/updateAddress")
-	public String updateAddress(@PathVariable Long userId, @ModelAttribute Address address) {
-	    User user = userService.findById(userId);
-	    address.setUser(user);
-		userService.updateAddress(address); 
-		System.out.println("Update User Account Button Clicked");
-	    return "redirect:/users/" + userId;
-	}
+
 
 	@GetMapping("/users/{userId}")
 	public String getOneUser(ModelMap model, @PathVariable Long userId) {
@@ -172,14 +188,21 @@ public class UserController {
 		return "account";
 	}
 	
-	@PostMapping("/users/{userId}/accounts/{accountId}/save")
-	public String saveAccount(@PathVariable Long userId, @PathVariable Long accountId, @ModelAttribute Account account) {
-		System.out.println("Saving Account");
-		account.setAccountId(accountId); 
-	    userService.saveOrUpdateAccount(userId, account); 
-	    System.out.println("Saved account: "+account);
-	    return "redirect:/users/" + userId; 
-	}
+	 @PostMapping("/save")
+	    public String saveAccount(@ModelAttribute Account account, @RequestParam Long userId) {
+	        // Fetch the user associated with the account
+	        User user = userService.findById(userId);
+
+	        // Associate the account with the user
+	        account.getUsers().add(user);
+	        user.getAccounts().add(account);
+
+	        // Save the account
+	        userService.saveOrUpdateAccount(userId, account);
+
+	        // Redirect back to the userDetails page
+	        return "redirect:/users/" + userId;
+	    }
 	
 	@PostMapping("/users/save")
 	public String saveUser(@ModelAttribute User user) {

@@ -23,7 +23,8 @@ public class User {
     @Column(nullable = false)
     private String name;
     
-   
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Address address;
 
     private LocalDate createdDate;
 
@@ -32,8 +33,7 @@ public class User {
     }
 
     
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Address address;
+    
     
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
@@ -95,10 +95,12 @@ public class User {
 
     public void setAddress(Address address) {
         this.address = address;
-        if (address != null) {
+        // Avoid infinite recursion
+        if (address != null && address.getUser() != this) {
             address.setUser(this);
         }
     }
+
 
     public List<Account> getAccounts() {
         return accounts;
