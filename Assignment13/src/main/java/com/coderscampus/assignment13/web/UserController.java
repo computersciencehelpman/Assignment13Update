@@ -67,13 +67,52 @@ public class UserController {
 	
 	@GetMapping("/users/{userId}/accounts")
 	public String createAccountForm(@PathVariable("userId") Long userId, Model model, @ModelAttribute Account account) {
-		System.out.println("Create New Account Button Clicked");
-		Account newAccount = userService.createAccountForUser(userId, account.getAccountName());
+	    System.out.println("Create New Account Button Clicked");
 	    model.addAttribute("userId", userId);
-	    model.addAttribute("account", newAccount);
+	    model.addAttribute("account", new Account()); // Add a new Account object to the model
 	    System.out.println("account page reached/not reached");
-	    return "account"; 
+	    return "account";
 	}
+
+	@GetMapping("/users/{userId}/accounts/{accountId}")
+	public String showAccountDetails(@PathVariable Long userId, @PathVariable Long accountId, Model model) {
+	    // Fetch User (optional based on your view's requirements)
+	    User user = userService.findById(userId);
+	    Account account = userService.findByAccountId(accountId);
+	    
+	    // Add attributes to the model
+	    model.addAttribute("user", user);      // Add User if needed
+	    model.addAttribute("userId", userId); // To pass the ID explicitly
+	    model.addAttribute("account", account);
+
+	    return "account"; // Render the "account.html" view
+	}
+
+//	@GetMapping("/users/{userId}/accounts/{accountId}")
+//	public String getAccountDetails(@PathVariable Long userId, @PathVariable Long accountId, Model model) {
+//	    // Fetch account details
+//	    Account account = userService.findByAccountId(accountId);
+//
+//	    // Add to model
+//	    model.addAttribute("userId", userId);
+//	    model.addAttribute("account", account);
+//	    return "account";
+//	}
+//	
+//	@GetMapping("/users/{userId}/accounts/{accountId}")
+//	public String showAccountForm(@PathVariable Long userId, @PathVariable Long accountId, Model model) {
+//		System.out.println("showAccountForm");
+//		User user = userService.findById(userId);
+//		System.out.println("User fetched: " + user);
+//	    Account account = userService.findByAccountId(accountId);
+//	    
+//	    model.addAttribute("user", user);
+//	    model.addAttribute("account", account);
+//
+//	    System.out.println("Account Id: "+ accountId);
+//	    System.out.println("User Id: "+ userId);
+//	    return "account"; 
+//	}
 	
 	@PostMapping("/register")
 	public String postCreateUser (User user) {
@@ -113,6 +152,7 @@ public class UserController {
 
 	    return "redirect:/users";
 	}
+
 
 
 
@@ -176,33 +216,23 @@ public class UserController {
 
 	    return "redirect:/users/" + userId;
 	}
-
-	@GetMapping("/users/{userId}/accounts/{accountId}/details")
-	public String showAccountDetails(@PathVariable Long userId, @PathVariable Long accountId, Model model) {
-		System.out.println("userId: " + userId);
-	    System.out.println("accountId: " + accountId);
-		Account account = userService.findByAccountId(accountId);
-		model.addAttribute("account", account);
-		model.addAttribute("userId", userId);
-		System.out.println("Account id:" +accountId);
-		return "account";
-	}
 	
-	 @PostMapping("/save")
-	    public String saveAccount(@ModelAttribute Account account, @RequestParam Long userId) {
-	        // Fetch the user associated with the account
-	        User user = userService.findById(userId);
+	@PostMapping("/users/{userId}/accounts/{accountId}/save")
+	public String saveAccount(
+	        @PathVariable Long userId,
+	        @PathVariable Long accountId,
+	        @ModelAttribute Account account) {
 
-	        // Associate the account with the user
-	        account.getUsers().add(user);
-	        user.getAccounts().add(account);
+	    System.out.println("Saving account with ID: " + accountId);
 
-	        // Save the account
+	    if (accountId == 0) { // Handle new account creation
+	        userService.createAccountForUser(userId, account.getAccountName());
+	    } else { // Handle updates to existing accounts
 	        userService.saveOrUpdateAccount(userId, account);
-
-	        // Redirect back to the userDetails page
-	        return "redirect:/users/" + userId;
 	    }
+
+	    return "redirect:/users/" + userId;
+	}
 	
 	@PostMapping("/users/save")
 	public String saveUser(@ModelAttribute User user) {
@@ -211,21 +241,6 @@ public class UserController {
 	    return "redirect:/users";
 	}
 
-	@GetMapping("/users/{userId}/accounts/{accountId}")
-	public String showAccountForm(@PathVariable Long userId, @PathVariable Long accountId, Model model) {
-		System.out.println("showAccountForm");
-		User user = userService.findById(userId);
-		System.out.println("User fetched: " + user);
-	    Account account = userService.findByAccountId(accountId);
-	    
-	    model.addAttribute("user", user);
-	    model.addAttribute("account", account);
-
-	    System.out.println("Account Id: "+ accountId);
-	    System.out.println("User Id: "+ userId);
-	    return "account"; 
-	}
-	
 	@GetMapping("/users/{userId}/accounts/{accountId}/info")
 	public String getOneAccount(ModelMap model, @PathVariable Long userId, @PathVariable Long accountId) {
 	    Account account = userService.findByAccountId(accountId);
