@@ -26,6 +26,13 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Address address;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "user_accounts", 
+               joinColumns = @JoinColumn(name = "user_id"), 
+               inverseJoinColumns = @JoinColumn(name = "account_id"))
+    private List<Account> accounts;
+
+    
     private LocalDate createdDate;
 
     public User() {
@@ -34,14 +41,14 @@ public class User {
 
     
     
-    
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(
-        name = "user_accounts",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "account_id")
-    )
-    private List<Account> accounts = new ArrayList<>();
+//    
+//    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+//    @JoinTable(
+//        name = "user_accounts",
+//        joinColumns = @JoinColumn(name = "user_id"),
+//        inverseJoinColumns = @JoinColumn(name = "account_id")
+//    )
+//    private List<Account> accounts = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

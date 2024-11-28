@@ -17,7 +17,8 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "accounts")
+    
+    @ManyToMany(mappedBy = "accounts", cascade = CascadeType.ALL)
     private List<User> users = new ArrayList<>();
 
 	public Long getAccountId() {

@@ -5,6 +5,11 @@
 </head>
 <body>
     <h1>Account #[[${account.accountId}]]</h1>
+    <p>Account ID: [[${account.accountId}]]</p>
+    <p>User ID: [[${userId}]]</p>
+	<p>Account ID: [[${account != null ? account.accountId : 'Account not found'}]]</p>
+    
+    
     <form th:action="@{/users/{userId}/accounts/{accountId}/save(userId=${userId}, accountId=${account.accountId != null ? account.accountId : 0})}" 
       th:object="${account}" method="post">
         <div>

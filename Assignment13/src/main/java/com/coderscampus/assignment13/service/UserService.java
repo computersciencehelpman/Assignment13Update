@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.coderscampus.assignment13.ResourceNotFoundException;
 import com.coderscampus.assignment13.domain.Account;
 import com.coderscampus.assignment13.domain.Address;
 import com.coderscampus.assignment13.domain.User;
@@ -126,7 +127,7 @@ public class UserService {
 
         return accountRepo.save(account);
     }
-
+    
     // Save or update an account
     @Transactional
     public void saveOrUpdateAccount(Long userId, Account account) {
@@ -136,6 +137,7 @@ public class UserService {
                 .filter(a -> a.getAccountId() != null && a.getAccountId().equals(account.getAccountId()))
                 .findFirst();
 
+        
         if (existingAccountOpt.isPresent()) {
             Account existingAccount = existingAccountOpt.get();
             existingAccount.setAccountName(account.getAccountName());
@@ -143,14 +145,16 @@ public class UserService {
             account.getUsers().add(user);
             user.getAccounts().add(account);
         }
-
+        if (account.getAccountId() == null) {
+            throw new IllegalArgumentException("Account ID cannot be null when updating.");
+        }
         accountRepo.save(account);
     }
 
     // Find account by ID
     public Account findByAccountId(Long accountId) {
         return accountRepo.findById(accountId).orElseThrow(() -> 
-            new RuntimeException("Account not found with ID: " + accountId));
+            new ResourceNotFoundException("Account not found for ID: " + accountId));
     }
 
     // Find all users with accounts and address (if custom query exists)

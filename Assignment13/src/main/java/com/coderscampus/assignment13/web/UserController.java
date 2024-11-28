@@ -74,19 +74,39 @@ public class UserController {
 	    return "account";
 	}
 
+//	@PostMapping("/users/{userId}/accounts")
+//	public String createOrUpdateAccount(@PathVariable Long userId, @ModelAttribute Account account) {
+//	    if (account.getAccountId() == null) {
+//	        // Handle new account creation
+//	        userService.createAccountForUser(userId, account.getAccountName());
+//	    } else {
+//	        // Handle account update
+//	        userService.saveOrUpdateAccount(userId, account);
+//	    }
+//	    return "redirect:/users/" + userId;
+//	}
+
+	
 	@GetMapping("/users/{userId}/accounts/{accountId}")
 	public String showAccountDetails(@PathVariable Long userId, @PathVariable Long accountId, Model model) {
-	    // Fetch User (optional based on your view's requirements)
+		System.out.println("Reached showAccountDetails method");
+		// Fetch user and account
 	    User user = userService.findById(userId);
 	    Account account = userService.findByAccountId(accountId);
-	    
-	    // Add attributes to the model
-	    model.addAttribute("user", user);      // Add User if needed
-	    model.addAttribute("userId", userId); // To pass the ID explicitly
+
+	    // Debug logging
+	    System.out.println("User ID: " + userId);
+	    System.out.println("Account ID: " + accountId);
+	    System.out.println("Account fetched: " + (account != null ? account.getAccountId() : "null"));
+
+	    // Add attributes to model
+	    model.addAttribute("user", user);
+	    model.addAttribute("userId", userId);
 	    model.addAttribute("account", account);
 
 	    return "account"; // Render the "account.html" view
 	}
+
 
 //	@GetMapping("/users/{userId}/accounts/{accountId}")
 //	public String getAccountDetails(@PathVariable Long userId, @PathVariable Long accountId, Model model) {
@@ -198,24 +218,16 @@ public class UserController {
 	
 	@PostMapping("/users/{userId}/accounts")
 	public String createOrUpdateAccount(@PathVariable Long userId, @ModelAttribute Account account) {
-	    User user = userService.findById(userId);
-	    Account savedAccount;
-
-	    if (account.getAccountId() == null) { 
-	        savedAccount = userService.createAccountForUser(userId, account.getAccountName());
+	    if (account.getAccountId() == null) {
+	        // Handle new account creation
+	        userService.createAccountForUser(userId, account.getAccountName());
 	    } else {
-	        savedAccount = userService.findByAccountId(account.getAccountId());
-	        savedAccount.setAccountName(account.getAccountName());
-	        userService.saveOrUpdateAccount(userId, savedAccount);
+	        // Handle account update
+	        userService.saveOrUpdateAccount(userId, account);
 	    }
-
-	    if (!user.getAccounts().contains(savedAccount)) {
-	        user.getAccounts().add(savedAccount);
-	        userService.saveUser(user); 
-	    }
-
 	    return "redirect:/users/" + userId;
 	}
+
 	
 	@PostMapping("/users/{userId}/accounts/{accountId}/save")
 	public String saveAccount(
