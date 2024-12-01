@@ -106,13 +106,11 @@
     <h3>Accounts</h3>
     <div>
         <ul>
-            <li th:each="account : ${user.accounts}">
-                <a th:href="@{/users/{userId}/accounts/{accountId}(userId=${user.userId}, accountId=${account.accountId})}" 
-                   th:text="${account.accountName}">
-                    Account Name
-                </a>
-            </li>
-        </ul>
+    		<li th:each="account : ${accounts}">
+        		Account Name: <span th:text="${account.accountName}"></span> |
+        		Account ID: <span th:text="${account.accountId}"></span>
+    		</li>
+		</ul>
     </div>
 
     <!-- Create New Account -->

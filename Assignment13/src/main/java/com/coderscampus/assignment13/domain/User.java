@@ -1,19 +1,18 @@
 package com.coderscampus.assignment13.domain;
 
-import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 
-
 @Entity
 @Table(name = "users")
 public class User {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id")
-	private Long userId;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Long userId;
+ 
     @Column(nullable = false)
     private String username;
 
@@ -22,40 +21,48 @@ public class User {
 
     @Column(nullable = false)
     private String name;
-    
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+        name = "user_accounts",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "account_id")
+    )
+    private List<Account> accounts = new ArrayList<>();
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Address address;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "user_accounts", 
-               joinColumns = @JoinColumn(name = "user_id"), 
-               inverseJoinColumns = @JoinColumn(name = "account_id"))
-    private List<Account> accounts;
-
-    
-    private LocalDate createdDate;
-
-    public User() {
-    	
+    // Getter and Setter for Address
+    public Address getAddress() {
+        return address;
     }
 
-    
-    
-//    
-//    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-//    @JoinTable(
-//        name = "user_accounts",
-//        joinColumns = @JoinColumn(name = "user_id"),
-//        inverseJoinColumns = @JoinColumn(name = "account_id")
-//    )
-//    private List<Account> accounts = new ArrayList<>();
-
-    @PrePersist
-    public void prePersist() {
-        this.createdDate = LocalDate.now();
+    public void setAddress(Address address) {
+        this.address = address;
+        // Avoid infinite recursion
+        if (address != null && address.getUser() != this) {
+            address.setUser(this);
+        }
     }
 
-   
+    // Existing getters, setters, and helper methods for accounts
+
+    public void addAccount(Account account) {
+        if (this.accounts == null) {
+            this.accounts = new ArrayList<>();
+        }
+        this.accounts.add(account);
+        account.getUsers().add(this); // Ensure bidirectional consistency
+    }
+
+    public void removeAccount(Account account) {
+        if (this.accounts != null) {
+            this.accounts.remove(account);
+            account.getUsers().remove(this); // Ensure bidirectional consistency
+        }
+    }
+
     public Long getUserId() {
         return userId;
     }
@@ -88,27 +95,6 @@ public class User {
         this.name = name;
     }
 
-    public LocalDate getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(LocalDate createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-        // Avoid infinite recursion
-        if (address != null && address.getUser() != this) {
-            address.setUser(this);
-        }
-    }
-
-
     public List<Account> getAccounts() {
         return accounts;
     }
@@ -117,10 +103,12 @@ public class User {
         this.accounts = accounts;
     }
 
-    @Override
-    public String toString() {
-        return "User [userId=" + userId + ", username=" + username + ", name=" + name + ", createdDate=" + createdDate + "]";
-    }
 
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", createdDate=" +  ", username=" + username + ", password="
+				+ password + ", name=" + name + ", accounts=" + accounts + ", address=" + address + "]";
+	}
 
+	
 }

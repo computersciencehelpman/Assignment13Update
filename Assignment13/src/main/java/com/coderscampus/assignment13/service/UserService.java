@@ -48,38 +48,43 @@ public class UserService {
         return userRepo.findAllUsersWithAccountsAndAddress(); // Assuming this returns a Set<User>
     }
 
-
     // Fetch user by username
     public List<User> findByUsername(String username) {
         return userRepo.findByUsername(username);
     }
 
-    // Save or update a user
     @Transactional
-    public User saveUser(User user) {
-        if (user.getUserId() != null) {
-            User existingUser = findById(user.getUserId()); // Use findById to ensure user exists
-            existingUser.setUsername(user.getUsername());
-            existingUser.setName(user.getName());
-
-            if (user.getAddress() != null) {
-                Address address = user.getAddress();
-                address.setUser(existingUser); // Ensure the address links back to the user
-                addressRepo.save(address);
-                existingUser.setAddress(address);
-            }
-            return userRepo.save(existingUser);
-        } else {
-            // For new users
-            if (user.getAddress() != null) {
-                Address address = user.getAddress();
-                address.setUser(user); // Link the address to the new user
-                addressRepo.save(address);
-                user.setAddress(address);
-            }
-            return userRepo.save(user);
-        }
+    public void saveUser(User user) {
+        userRepo.save(user);
     }
+
+    
+    // Save or update a user
+//    @Transactional
+//    public User saveUser(User user) {
+//        if (user.getUserId() != null) {
+//            User existingUser = findById(user.getUserId()); // Use findById to ensure user exists
+//            existingUser.setUsername(user.getUsername());
+//            existingUser.setName(user.getName());
+//
+//            if (user.getAddress() != null) {
+//                Address address = user.getAddress();
+//                address.setUser(existingUser); // Ensure the address links back to the user
+//                addressRepo.save(address);
+//                existingUser.setAddress(address);
+//            }
+//            return userRepo.save(existingUser);
+//        } else {
+//            // For new users
+//            if (user.getAddress() != null) {
+//                Address address = user.getAddress();
+//                address.setUser(user); // Link the address to the new user
+//                addressRepo.save(address);
+//                user.setAddress(address);
+//            }
+//            return userRepo.save(user);
+//        }
+//    }
 
     // Delete a user
     @Transactional
@@ -127,16 +132,37 @@ public class UserService {
 
         return accountRepo.save(account);
     }
-    
+
+    public void saveAccountForUser(User user, Account account) {
+        // Directly use the accounts collection
+        if (user.getAccounts() == null) {
+            user.setAccounts(new ArrayList<>());
+        }
+       
+        account.setAccountName("Account Name");
+        account.setAccountsOrder(1); // Set a default or calculated value
+        accountRepo.save(account);
+
+        user.getAccounts().add(account);
+        account.setUsers(List.of(user)); // Associate the account with the user
+        accountRepo.save(account);       // Save the account
+        userRepo.save(user);             // Save the user
+    }
+
+    @Transactional
+    public void updateUserAccounts(Long userId) {
+        User user = userRepo.findById(userId).orElseThrow();
+        List<Account> accounts = user.getAccounts(); // Safe within the transaction
+        accounts.add(new Account());
+    }
+
     // Save or update an account
     @Transactional
     public void saveOrUpdateAccount(Long userId, Account account) {
         User user = findById(userId); // Ensure user exists
-
         Optional<Account> existingAccountOpt = user.getAccounts().stream()
-                .filter(a -> a.getAccountId() != null && a.getAccountId().equals(account.getAccountId()))
+                .filter(a -> a.getAccountId().equals(account.getAccountId()))
                 .findFirst();
-
         
         if (existingAccountOpt.isPresent()) {
             Account existingAccount = existingAccountOpt.get();
@@ -145,11 +171,10 @@ public class UserService {
             account.getUsers().add(user);
             user.getAccounts().add(account);
         }
-        if (account.getAccountId() == null) {
-            throw new IllegalArgumentException("Account ID cannot be null when updating.");
-        }
+        
         accountRepo.save(account);
     }
+
 
     // Find account by ID
     public Account findByAccountId(Long accountId) {
