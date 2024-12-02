@@ -1,6 +1,6 @@
 package com.coderscampus.assignment13.domain;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import javax.persistence.*;
 
@@ -10,68 +10,53 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
-
-    @Column(length = 100)
+    
+    @Column(length = 100, nullable = false)
     private String accountName;
 
-    @Column(nullable = false) // Ensure it's not null
-    private Integer accountsOrder = 0; // Default value
-    
-    @ManyToMany(mappedBy = "accounts", cascade = CascadeType.ALL)
-    private List<User> users = new ArrayList<>();
+    @Column(nullable = false)
+    private Integer accountsOrder = 0;
 
-    // Getter, setter, and helper methods for users
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false) // Foreign key to User
+    private User user;
 
-    public void addUser(User user) {
-        if (this.users == null) {
-            this.users = new ArrayList<>();
-        }
-        this.users.add(user);
-        user.getAccounts().add(this); // Ensure bidirectional consistency
+    // Getters and setters
+    public Long getAccountId() {
+        return accountId;
     }
 
-    public void removeUser(User user) {
-        if (this.users != null) {
-            this.users.remove(user);
-            user.getAccounts().remove(this); // Ensure bidirectional consistency
-        }
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
-	public Long getAccountId() {
-		return accountId;
-	}
+    public String getAccountName() {
+        return accountName;
+    }
 
-	public void setAccountId(Long accountId) {
-		this.accountId = accountId;
-	}
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
 
-	public String getAccountName() {
-		return accountName;
-	}
+    public Integer getAccountsOrder() {
+        return accountsOrder;
+    }
 
-	public void setAccountName(String accountName) {
-		this.accountName = accountName;
-	}
+    public void setAccountsOrder(Integer accountsOrder) {
+        this.accountsOrder = accountsOrder;
+    }
 
-	public List<User> getUsers() {
-		return users;
-	}
+    public User getUser() {
+        return user;
+    }
 
-	public void setUsers(List<User> users) {
-		this.users = users;
-	}
-
-	public Integer getAccountsOrder() {
-		return accountsOrder;
-	}
-
-	public void setAccountsOrder(Integer accountsOrder) {
-		this.accountsOrder = accountsOrder;
-	}
+    public void setUser(User user) {
+        this.user = user;
+    }
 
 	@Override
 	public String toString() {
-		return "Account [accountId=" + accountId + ", accountName=" + accountName + ", users=" + users + "]";
+		return "Account [accountId=" + accountId + ", accountName=" + accountName + ", accountsOrder=" + accountsOrder
+				+ ", user=" + user + "]";
 	}
-    
 }

@@ -1,15 +1,10 @@
 package com.coderscampus.assignment13.service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.EntityManager;
-import javax.persistence.OneToMany;
-import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -122,31 +117,23 @@ public class UserService {
     // Create a new account for a user
     @Transactional
     public Account createAccountForUser(Long userId, String accountName) {
-        User user = findById(userId); // Ensure user exists
+        User user = findById(userId); // Fetch the user
         Account account = new Account();
         account.setAccountName(accountName);
+        account.setUser(user); // Correctly associate the account with the user
 
-        List<User> users = new ArrayList<>();
-        users.add(user);
-        account.setUsers(users);
-
-        return accountRepo.save(account);
+        user.getAccounts().add(account); // Update the user's account list
+        return accountRepo.save(account); // Save and return the account
     }
 
+    @Transactional
     public void saveAccountForUser(User user, Account account) {
-        // Directly use the accounts collection
-        if (user.getAccounts() == null) {
-            user.setAccounts(new ArrayList<>());
-        }
-       
-        account.setAccountName("Account Name");
-        account.setAccountsOrder(1); // Set a default or calculated value
-        accountRepo.save(account);
+        // Ensure bidirectional consistency
+        account.setUser(user); // Set the user in the account
+        user.getAccounts().add(account); // Add the account to the user's account list
 
-        user.getAccounts().add(account);
-        account.setUsers(List.of(user)); // Associate the account with the user
-        accountRepo.save(account);       // Save the account
-        userRepo.save(user);             // Save the user
+        accountRepo.save(account); // Save the account
+        userRepo.save(user);       // Save the user
     }
 
     @Transactional
@@ -168,7 +155,7 @@ public class UserService {
             Account existingAccount = existingAccountOpt.get();
             existingAccount.setAccountName(account.getAccountName());
         } else {
-            account.getUsers().add(user);
+            account.getUser();
             user.getAccounts().add(account);
         }
         

@@ -12,7 +12,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
- 
+
     @Column(nullable = false)
     private String username;
 
@@ -22,47 +22,36 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-        name = "user_accounts",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "account_id")
-    )
-    private List<Account> accounts = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Account> accounts;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Address address;
 
-    // Getter and Setter for Address
+    // Getter and Setter for address
     public Address getAddress() {
         return address;
     }
 
     public void setAddress(Address address) {
         this.address = address;
-        // Avoid infinite recursion
         if (address != null && address.getUser() != this) {
             address.setUser(this);
         }
     }
 
-    // Existing getters, setters, and helper methods for accounts
-
+    // Helper methods for accounts
     public void addAccount(Account account) {
-        if (this.accounts == null) {
-            this.accounts = new ArrayList<>();
-        }
-        this.accounts.add(account);
-        account.getUsers().add(this); // Ensure bidirectional consistency
+        accounts.add(account);
+        account.setUser(this);
     }
 
     public void removeAccount(Account account) {
-        if (this.accounts != null) {
-            this.accounts.remove(account);
-            account.getUsers().remove(this); // Ensure bidirectional consistency
-        }
+        accounts.remove(account);
+        account.setUser(null);
     }
 
+    // Getters and setters for other fields
     public Long getUserId() {
         return userId;
     }
@@ -103,12 +92,9 @@ public class User {
         this.accounts = accounts;
     }
 
-
 	@Override
 	public String toString() {
-		return "User [userId=" + userId + ", createdDate=" +  ", username=" + username + ", password="
-				+ password + ", name=" + name + ", accounts=" + accounts + ", address=" + address + "]";
+		return "User [userId=" + userId + ", username=" + username + ", password=" + password + ", name=" + name
+				+ ", accounts=" + accounts + ", address=" + address + "]";
 	}
-
-	
 }

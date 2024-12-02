@@ -1,6 +1,5 @@
 package com.coderscampus.assignment13.repository;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,8 +13,9 @@ import com.coderscampus.assignment13.domain.Account;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Account> findByAccountName(String accountName);
        
-    @Query("SELECT a FROM Account a JOIN a.users u WHERE u.userId = :userId")
+    @Query("SELECT a FROM Account a WHERE a.user.userId = :userId")
     List<Account> findAccountsByUserId(@Param("userId") Long userId);
+
 
 
 }

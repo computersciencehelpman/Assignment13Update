@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.coderscampus.assignment13.domain.User;
@@ -32,8 +31,6 @@ public class UserController {
 	        this.userService = userService;
 	    }
 
-	   
-	
 	@GetMapping("/details")
     public ResponseEntity<Set<User>> getUsersWithDetails() {
         Set<User> users = userService.findAll();
@@ -80,7 +77,8 @@ public class UserController {
 	    User user = userService.findById(userId); 
 
 	    // Set the user for the account
-	    account.setUsers(List.of(user));
+	    account.setUser(user);  // Set the user for this account
+
 
 	    // Save the account using the service
 	    userService.saveAccountForUser(user, account);
