@@ -38,12 +38,13 @@ public class UserController {
     }
 	
 	@GetMapping("/register")
-	public String getCreateUser (ModelMap model) {
-		
-		model.put("user", new User());
-		
-		return "register";
+	public String getCreateUser(ModelMap model) {
+	    User user = new User();
+	    user.setAddress(new Address()); // Ensure Address is initialized
+	    model.put("user", user);
+	    return "register";
 	}
+
 	@GetMapping("/users")
 	public String getAllUsers(ModelMap model) {
 	    Set<User> users = userService.findAll();
@@ -95,8 +96,12 @@ public class UserController {
 	@GetMapping("/users/{userId}/accounts")
 	public String createAccountForm(@PathVariable("userId") Long userId, Model model, @ModelAttribute Account account) {
 	    System.out.println("Create New Account Button Clicked");
-	    account.setAccountId(0L);
+	 
+	    Long lastAccountId = userService.getLastAccountId();
+	    Long nextAccountId = (lastAccountId != null) ? lastAccountId + 1 : 1; // Default to 1 if no accounts exist
+	    
 	    model.addAttribute("userId", userId);
+	    model.addAttribute("nextAccountId", nextAccountId); // Add the calculated ID
 	    model.addAttribute("account", new Account()); // Add a new Account object to the model
 	    System.out.println("account page reached/not reached");
 	    return "account";
@@ -118,7 +123,7 @@ public class UserController {
 	    model.addAttribute("user", user);
 	    model.addAttribute("userId", userId);
 	    model.addAttribute("account", account);
-
+	    
 	    return "account"; // Render the "account.html" view
 	}
 	

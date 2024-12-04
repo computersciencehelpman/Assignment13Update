@@ -5,9 +5,6 @@
 </head>
 <body>
     <h1>Account #[[${account.accountId != null ? account.accountId : 'New Account'}]]</h1>
-    <p>Account ID:  <span th:text="${account.accountId}"></span></p>
-    <p>User ID: [[${userId}]]</p>
-	<p>Account ID: [[${account != null ? account.accountId : 'Account not found'}]]</p>
     
     
     <form th:action="@{/users/{userId}/accounts/{accountId}/save(userId=${userId}, accountId=${account.accountId != null ? account.accountId : 0})}" 

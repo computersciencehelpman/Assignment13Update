@@ -84,9 +84,16 @@ public class UserService {
     // Delete a user
     @Transactional
     public void deleteUser(Long userId) {
-        User user = findById(userId); // Ensure user exists
+        User user = findById(userId); // Fetch the user
+        
+        // Explicitly clear associations if cascading is not used
+        user.getAccounts().clear();
+        user.setAddress(null);
+
+        // Now delete the user
         userRepo.delete(user);
     }
+
 
     // Update an address
     @Transactional
@@ -162,6 +169,9 @@ public class UserService {
         accountRepo.save(account);
     }
 
+    public Long getLastAccountId() {
+        return accountRepo.findMaxAccountId(); // Custom query to fetch the max account ID
+    }
 
     // Find account by ID
     public Account findByAccountId(Long accountId) {

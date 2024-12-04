@@ -98,7 +98,7 @@
     </form>
 
     <!-- User Deletion Form -->
-    <form th:action="@{/users/{userId}/delete(userId=${user.userId})}" method="post">
+    <form action="#" th:action="@{/users/{userId}/delete(userId=${user.userId})}" method="post">
         <input type="submit" value="Delete User Account" />
     </form>
 
@@ -109,7 +109,6 @@
     		<li th:each="account : ${accounts}">
     			<a th:href="@{/users/{userId}/accounts/{accountId}(userId=${user.userId}, accountId=${account.accountId})}">
         			<span th:text="${account.accountName}"></span>
-        			 <span th:text="${account.accountId}"></span>
    		    	</a>
 			</li>
 		</ul>

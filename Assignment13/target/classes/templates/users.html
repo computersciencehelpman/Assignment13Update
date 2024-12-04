@@ -13,16 +13,19 @@
 		<span th:text="${user.name}">Full Name</span><br/>
 		<span th:text="${user.password}">Password</span><br/>
 		
-		<span th:text="${user.address.addressLine1}">AddressLine1</span><br/>
-		<span th:text="${user.address.addressLine2}">AddressLine2</span><br/>
-		<span th:text="${user.address.city}">City</span><br/>
-		<span th:text="${user.address.region}">Region</span><br/>
-		<span th:text="${user.address.country}">Country</span><br/>
-		<span th:text="${user.address.zipCode}">ZipCode</span><br/>
+		<span th:text="${user.address?.addressLine1} ?: ' '">AddressLine1</span><br/>
+		<span th:text="${user.address?.addressLine2} ?: ' '">AddressLine2</span><br/>
+		<span th:text="${user.address?.city} ?: ' '">City</span><br/>
+		<span th:text="${user.address?.region} ?: ' '">Region</span><br/>
+		<span th:text="${user.address?.country} ?: ' '">Country</span><br/>
+		<span th:text="${user.address?.zipCode} ?: ' '">ZipCode</span><br/>	
 		
 		<div th:each="account : ${user.accounts}">
-			<span th:text="${account.accountName}">Account Name</span>
+    		<a th:href="@{/users/{userId}/accounts/{accountId}(userId=${user.userId}, accountId=${account.accountId})}">
+        		<span th:text="${account.accountName}">Account Name</span>
+    		</a>
 		</div>
+		
 		<hr/>
 	</div>
 </body>
