@@ -4,7 +4,7 @@
     <title>Account Details</title>
 </head>
 <body>
-    <h1>Account #[[${account.accountId}]]</h1>
+    <h1>Account #[[${account.accountId != null ? account.accountId : 'New Account'}]]</h1>
     <p>Account ID:  <span th:text="${account.accountId}"></span></p>
     <p>User ID: [[${userId}]]</p>
 	<p>Account ID: [[${account != null ? account.accountId : 'Account not found'}]]</p>

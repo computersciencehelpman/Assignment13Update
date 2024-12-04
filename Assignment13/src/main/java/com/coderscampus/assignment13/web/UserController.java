@@ -92,16 +92,15 @@ public class UserController {
 	    return "redirect:/users/" + userId;
 	}
 
-	
 	@GetMapping("/users/{userId}/accounts")
 	public String createAccountForm(@PathVariable("userId") Long userId, Model model, @ModelAttribute Account account) {
 	    System.out.println("Create New Account Button Clicked");
+	    account.setAccountId(0L);
 	    model.addAttribute("userId", userId);
 	    model.addAttribute("account", new Account()); // Add a new Account object to the model
 	    System.out.println("account page reached/not reached");
 	    return "account";
 	}
-
 	
 	@GetMapping("/users/{userId}/accounts/{accountId}")
 	public String showAccountDetails(@PathVariable Long userId, @PathVariable Long accountId, Model model) {
