@@ -82,16 +82,23 @@ public class UserService {
 //    }
 
     // Delete a user
+//    @Transactional
+//    public void deleteUser(Long userId) {
+//        userRepo.deleteById(userId); // JPA cascading should handle associated entities
+//    }
+
     @Transactional
     public void deleteUser(Long userId) {
-        User user = findById(userId); // Fetch the user
+        User user = userRepo.findById(userId).orElseThrow(() -> 
+            new ResourceNotFoundException("User not found for ID: " + userId));
         
-        // Explicitly clear associations if cascading is not used
+        // Explicitly clear associations
+        user.getAccounts().forEach(account -> account.setUser(null)); // Break bidirectional link
         user.getAccounts().clear();
         user.setAddress(null);
-
-        // Now delete the user
-        userRepo.delete(user);
+        
+        System.out.println("Deleting user: " + user);
+        userRepo.delete(user); // Now delete the user
     }
 
 
