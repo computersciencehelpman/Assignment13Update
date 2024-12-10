@@ -13,13 +13,10 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(nullable = false)
     private String username;
-
-    @Column(nullable = false)
+    
     private String password;
 
-    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

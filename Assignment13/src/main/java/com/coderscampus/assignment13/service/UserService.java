@@ -1,6 +1,7 @@
 package com.coderscampus.assignment13.service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -92,14 +93,24 @@ public class UserService {
         User user = userRepo.findById(userId).orElseThrow(() -> 
             new ResourceNotFoundException("User not found for ID: " + userId));
         
-        // Explicitly clear associations
-        user.getAccounts().forEach(account -> account.setUser(null)); // Break bidirectional link
-        user.getAccounts().clear();
-        user.setAddress(null);
-        
-        System.out.println("Deleting user: " + user);
-        userRepo.delete(user); // Now delete the user
+        // Explicitly handle accounts
+        List<Account> accounts = new ArrayList<>(user.getAccounts()); // Copy to avoid modification issues
+        for (Account account : accounts) {
+            account.setUser(null); // Break relationship
+            accountRepo.delete(account); // Remove account
+        }
+        user.getAccounts().clear(); // Clear remaining references
+
+        // Remove address if necessary
+        if (user.getAddress() != null) {
+            addressRepo.delete(user.getAddress());
+            user.setAddress(null);
+        }
+
+        // Delete user
+        userRepo.delete(user);
     }
+
 
 
     // Update an address

@@ -1,7 +1,7 @@
 package com.coderscampus.assignment13.domain;
 
 
-import java.util.List;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,14 +11,14 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
     
-    @Column(length = 100, nullable = false)
+    @Column(length = 100)
     private String accountName;
 
-    @Column(nullable = false)
+    
     private Integer accountsOrder = 0;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false) // Foreign key to User
+    @JoinColumn(name = "user_id") // Foreign key to User
     private User user;
 
     // Getters and setters
